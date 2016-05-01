@@ -9,6 +9,10 @@ Shader::Shader (const char *vertexFilePath, const char *fragmentFilePath) {
 	this->createShader(vertexFilePath, fragmentFilePath);
 }
 
+Shader::Shader(const char * vertexFilePath, const char * geometryFilePath, const char * fragmentFilePath) {
+	this->createShader(vertexFilePath, geometryFilePath, fragmentFilePath);
+}
+
 //! Deletes the program if it was compiled
 Shader::~Shader () {
 	if (programID != 0)
@@ -101,7 +105,7 @@ void Shader::createShader(const char *vertexFilePath, const char *fragmentFilePa
 }
 
 //! Creates, loads, compiles and links the GLSL shader objects.
-void Shader::createShader(const char *vertexFilePath, const char *fragmentFilePath, const char* geometryFilePath) {
+void Shader::createShader(const char *vertexFilePath, const char* geometryFilePath, const char *fragmentFilePath) {
 
 	char str[4096]; // for wrinting error msg
 
@@ -214,7 +218,7 @@ void Shader::createShader(const char *vertexFilePath, const char *fragmentFilePa
 	programID = program;
 }
 
-void Shader::createTransformShader(const char *vertexFilePath, const char *fragmentFilePath, const char* geometryFilePath) {
+void Shader::createTransformShader(const char *vertexFilePath, const char* geometryFilePath, const char *fragmentFilePath, const char *captured[]) {
 
 	char str[4096]; // for wrinting error msg
 
@@ -296,10 +300,10 @@ void Shader::createTransformShader(const char *vertexFilePath, const char *fragm
 	// create program object
 	GLuint program = glCreateProgram();
 
-	const char *captured[] = {
+	/*const char *captured[] = {
 		"vertexPosition",
 		"vertexNormal",
-	};
+	};*/
 	glTransformFeedbackVaryings(program, 2, captured, GL_INTERLEAVED_ATTRIBS);
 
 	glAttachShader(program, vertexShader);

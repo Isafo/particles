@@ -3,16 +3,15 @@
 #include "glfwContext.h"
 #include "Shader.h"
 #include "MatrixStack.h"
-
 #include "Camera.h"
-
+#include "ParticleSystem.h"
 
 #include <glm/vec3.hpp> // glm::vec3
 #include <glm/vec4.hpp> // glm::vec4
 #include <glm/mat4x4.hpp> // glm::mat4
 #include <glm/gtc/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale, glm::perspective
 #include <glm/gtc/type_ptr.hpp> //glm::make:mat4
-#include <glm\gtx\rotate_vector.hpp> // rotate vector
+#include <glm/gtx/rotate_vector.hpp> // rotate vector
 
 #include <iostream>
 
@@ -40,25 +39,17 @@ int main(){
 	// Print some info about the OpenGL context...
 	glfw.printGLInfo();
 
-	//Shader emitShader;
-	//emitShader.createTransformShader("shaders/emit.vert", "shaders/emit.frag", "shaders/emit.geom");
-
-	//GLint locationP = glGetUniformLocation(emitShader.programID, "P"); //perspective matrix
-	//GLint locationMV = glGetUniformLocation(emitShader.programID, "MV"); //modelview matrix
-	//GLint locationM = glGetUniformLocation(emitShader.programID, "M"); //modelview matrix
-
 	MatrixStack MVstack; MVstack.init();
 
 	//scene objects
-
-	//TODO: do this properly
-	glm::vec4 LP = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);// glm::vec4(lightOne.getPosition()[0], lightOne.getPosition()[1], lightOne.getPosition()[2], 1.0f);
-	glm::mat4 lightT = glm::mat4(1.0f);
-
 	Camera mCamera;
 	mCamera.setPosition(&glm::vec3(0.0f, 0.0f, -1.0f));
 	mCamera.update();
 
+	ParticleSystem ps(0.0, -0.45, 0.0);
+	
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glViewport(0, 0, 1280, 720);
 
 	double lastTime = glfwGetTime() - 0.001;
 	double dT = 0.0;
@@ -68,17 +59,16 @@ int main(){
 		lastTime = glfwGetTime();
 
 		//glfw input handler
-		inputHandler(currentWindow, dT);
-		cameraHandler(currentWindow, dT, &mCamera);
+		//inputHandler(currentWindow, dT);
+		//cameraHandler(currentWindow, dT, &mCamera);
 
 		GLcalls();
-
-		//glUseProgram(sceneLight.programID);
-		
 		
 		MVstack.push();//Camera transforms --<
 			//glUniformMatrix4fv(locationP, 1, GL_FALSE, mCamera.getPerspective());
 			//MVstack.multiply(mCamera.getTransformM());
+			
+			ps.render(dT);
 
 
 		MVstack.pop(); //Camera transforms >--
