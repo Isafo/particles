@@ -6,8 +6,8 @@ ParticleSystem::ParticleSystem(float x, float y, float z)
 	currentBuffer = 0;
 
 	Particle particle[2000];
-	particle[0].pos = glm::vec3(x, y, z);
-	particle[0].vel = glm::vec3(0.0, 0.0, 0.0);
+	particle[0].pos[0] = x; particle[0].pos[1] = y; particle[0].pos[2] = z;
+	particle[0].vel[0] = 0.0; particle[0].vel[1] = 0.0; particle[0].vel[2] = 0.0;
 	particle[0].TTL = 0;
 	particle[0].type = EMITTER;
 
@@ -31,7 +31,7 @@ ParticleSystem::ParticleSystem(float x, float y, float z)
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)0); // position
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)(3 * sizeof(GLfloat))); // velocity
 		glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)(6 * sizeof(GLfloat))); // time to live
-		glVertexAttribPointer(3, 1, GL_INT, GL_FALSE, sizeof(Particle), (void*)(7 * sizeof(GLfloat))); // type
+		glVertexAttribPointer(3, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof(Particle), (void*)(7 * sizeof(GLfloat))); // type
 
 	}
 	
@@ -56,9 +56,17 @@ ParticleSystem::~ParticleSystem()
 
 void ParticleSystem::updateParticles(const float& DELTA_TIME) 
 {
-	glUseProgram(emitShader.programID);
+	
+	// for debugging -----------------------
+	GLuint qid;
+	glGenQueries(1, &qid);
 
-	//glEnable(GL_RASTERIZER_DISCARD);
+	glBeginQuery(GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN, qid);
+	// -----------------------------------
+	// turn off rendering
+	glEnable(GL_RASTERIZER_DISCARD);
+	
+	glUseProgram(emitShader.programID);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo[currentBuffer]);
 	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, tfb[currentBuffer]);
@@ -91,7 +99,31 @@ void ParticleSystem::updateParticles(const float& DELTA_TIME)
 	glDisableVertexAttribArray(2);
 	glDisableVertexAttribArray(3);
 
-	//glDisable(GL_RASTERIZER_DISCARD);
+	// enable rendering
+	glDisable(GL_RASTERIZER_DISCARD);
+
+	// for debugging -------------------------------------------
+	glEndQuery(GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN);
+	GLuint nprimitives;
+	glGetQueryObjectuiv(qid, GL_QUERY_RESULT, &nprimitives);
+
+	GLfloat feedback[7];
+	glGetBufferSubData(GL_TRANSFORM_FEEDBACK_BUFFER, 0, sizeof(feedback), feedback);
+	for (int i = 0; i < 16; i = i + 8) {
+		std::cout << "position " << 
+					 feedback[i] << ", " <<
+					 feedback[i + 1] << ", " <<
+					 feedback[i + 2] << ", \n" <<
+					 "vel " <<
+					 feedback[i + 3] << ", " <<
+					 feedback[i + 4] << ", " <<
+					 feedback[i + 5] << ", \n" <<
+					 " TTL" <<
+					 feedback[i + 6] << std::endl;
+
+		std::cout << "----------" << std::endl;
+	}
+	// ---------------------------------------------------------
 }
 
 

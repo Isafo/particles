@@ -17,10 +17,10 @@ private:
 	void updateParticles(const float & DELTA_TIME);
 
 	struct Particle {
-		glm::vec3 pos;
-		glm::vec3 vel;
+		GLfloat pos[3];
+		GLfloat vel[3];
 		GLfloat TTL; // time to live
-		GLint type;
+		GLuint type;
 	};
 
 	const int EMITTER = 0;

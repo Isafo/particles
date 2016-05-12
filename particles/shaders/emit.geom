@@ -1,10 +1,11 @@
 #version 450
 layout(points) in;
-layout(points, max_vertices = 1) out;
+layout(points, max_vertices = 3) out;
 
 out vec3 pos;
 out vec3 vel;
 out float TTL;
+out uint type;
 
 void main() {
 	
@@ -13,9 +14,21 @@ void main() {
 	pos = vec3(0.0, -0.45, 0.0);
 	vel = gl_in[0].gl_Position.xyz + vec3(0.0, 0.25, 0.0);
 	TTL = 1;
+	type = 1;
 
 	gl_Position = vec4(pos, 1.0);
 	gl_PointSize = 1.0;
 	EmitVertex();
 	EndPrimitive();
+
+	pos = vec3(-0.45, -0.45, 0.0);
+	vel = gl_in[0].gl_Position.xyz + vec3(0.0, 0.25, 0.0);
+	TTL = 1;
+	type = 1;
+
+	gl_Position = vec4(pos, 1.0);
+	gl_PointSize = 1.0;
+	EmitVertex();
+	EndPrimitive();
+
 }

@@ -20,9 +20,6 @@ void cameraHandler(GLFWwindow* _window, double _dT, Camera* _cam);
 void GLcalls();
 
 int main(){
-
-	glm::mat4 test = glm::mat4(1);
-
 	glfwContext glfw;
 	GLFWwindow* currentWindow = nullptr;
 
