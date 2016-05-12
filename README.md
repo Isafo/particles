@@ -1,0 +1,1 @@
+Particle system based on [this](http://docs.nvidia.com/gameworks/index.html#gameworkslibrary/graphicssamples/opengl_samples/feedbackparticlessample.htm) Nvidia article.
